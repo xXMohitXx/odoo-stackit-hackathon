@@ -16,13 +16,26 @@ export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedFilter, setSelectedFilter] = useState(searchParams.get("filter") || "newest");
   const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get("page") || "1"));
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [selectedTag, setSelectedTag] = useState(searchParams.get("tag") || "");
   const { toast } = useToast();
   
   // Fetch questions from API
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["questions", selectedFilter, currentPage],
+    queryKey: ["questions", selectedFilter, currentPage, searchQuery, selectedTag],
     queryFn: async () => {
       const params = new URLSearchParams();
+      
+      // Add search query
+      if (searchQuery) {
+        params.append("search", searchQuery);
+      }
+
+      // Add tag filter
+      if (selectedTag) {
+        // Send the tag name as is, backend will handle the matching
+        params.append("tag", selectedTag);
+      }
       
       // Add filter parameters
       if (selectedFilter === "newest") {
@@ -41,28 +54,48 @@ export default function Home() {
       
       const response = await api.get(`/questions?${params.toString()}`);
       return response.data;
-    },
-    onError: () => {
+    }
+  });
+
+  // Handle error with toast
+  useEffect(() => {
+    if (isError) {
       toast({
         variant: "destructive",
         title: "Error",
         description: "Failed to load questions. Please try again.",
       });
     }
-  });
+  }, [isError, toast]);
   
   // Update URL when filter changes
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
     params.set("filter", selectedFilter);
     params.set("page", currentPage.toString());
+    if (searchQuery) {
+      params.set("search", searchQuery);
+    } else {
+      params.delete("search");
+    }
+    if (selectedTag) {
+      params.set("tag", selectedTag);
+    } else {
+      params.delete("tag");
+    }
     setSearchParams(params);
-  }, [selectedFilter, currentPage, setSearchParams, searchParams]);
+  }, [selectedFilter, currentPage, searchQuery, selectedTag, setSearchParams, searchParams]);
   
   // Handle filter change
   const handleFilterChange = (filter: string) => {
     setSelectedFilter(filter);
     setCurrentPage(1); // Reset to first page when filter changes
+  };
+
+  // Handle tag change
+  const handleTagChange = (tag: string) => {
+    setSelectedTag(tag);
+    setCurrentPage(1); // Reset to first page when tag changes
   };
   
   // Handle pagination
@@ -79,17 +112,20 @@ export default function Home() {
   ];
   
   // Transform API data to match QuestionCard props
-  const questions = data?.data.map((question: any) => ({
+  const questions = data?.data?.map((question: any) => ({
     id: question._id,
     title: question.title,
-    description: question.description.replace(/<[^>]*>/g, ''), // Strip HTML tags
-    tags: question.tags.map((tag: any) => tag.name || tag),
+    description: question.description?.replace(/<[^>]*>/g, '') || '', // Strip HTML tags
+    tags: question.tags?.map((tag: any) => (tag.name || tag).replace(/^#/, '')) || [],
     votes: question.votes || 0,
     answerCount: question.answers?.length || 0,
     hasAcceptedAnswer: question.answers?.some((answer: any) => answer.isAccepted) || false,
+    userVote: null, // Default to no vote
     timeAgo: formatTimeAgo(question.createdAt),
     author: question.user?.name || "Anonymous"
   })) || [];
+
+
 
   return (
     <div className="min-h-screen bg-gradient-hero">
@@ -128,18 +164,52 @@ export default function Home() {
             {/* Header with Ask Question button */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold text-foreground">Latest Questions</h2>
+                <h2 className="text-3xl font-bold text-foreground">
+                  {searchQuery ? `Search Results for "${searchQuery}"` : 
+                   selectedTag ? `Questions tagged "${selectedTag}"` :
+                   "Latest Questions"}
+                </h2>
                 <p className="text-muted-foreground">
                   {isLoading ? "Loading questions..." : 
-                   `${data?.count || 0} questions from our community`}
+                   searchQuery ? 
+                     `${data?.count || 0} questions found for "${searchQuery}"` :
+                     selectedTag ?
+                       `${data?.count || 0} questions tagged "${selectedTag}"` :
+                       `${data?.count || 0} questions from our community`}
                 </p>
               </div>
-              <Link to="/ask">
-                <Button className="flex items-center gap-2 w-full sm:w-auto hover-lift">
-                  <Plus className="h-4 w-4" />
-                  Ask Question
-                </Button>
-              </Link>
+              <div className="flex gap-2">
+                {searchQuery && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setSearchQuery("");
+                      setCurrentPage(1);
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    Clear Search
+                  </Button>
+                )}
+                {selectedTag && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setSelectedTag("");
+                      setCurrentPage(1);
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    Clear Tag
+                  </Button>
+                )}
+                <Link to="/ask">
+                  <Button className="flex items-center gap-2 w-full sm:w-auto hover-lift">
+                    <Plus className="h-4 w-4" />
+                    Ask Question
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             {/* Mobile Filters */}

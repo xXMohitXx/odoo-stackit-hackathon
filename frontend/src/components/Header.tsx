@@ -1,11 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bell, Search, User } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useState, useEffect } from "react";
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
+
+  // Get search query from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const search = params.get('search') || '';
+    setSearchQuery(search);
+  }, [location.search]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   return (
     <header className="border-b border-border/50 glass-effect shadow-card sticky top-0 z-50 backdrop-blur-xl">
@@ -22,19 +41,26 @@ export function Header() {
 
           {/* Search Bar */}
           <div className="flex-1 max-w-md mx-6 hidden sm:block">
-            <div className="relative">
+            <form onSubmit={handleSearch} className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                <Input
                 placeholder="Search questions..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 bg-background/50 backdrop-blur-sm border-border/50 focus:bg-background/80 transition-all"
               />
-            </div>
+            </form>
           </div>
 
           {/* Right side actions */}
           <div className="flex items-center space-x-2 sm:space-x-3">
             {/* Mobile Search Toggle */}
-            <Button variant="ghost" size="icon" className="sm:hidden">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="sm:hidden"
+              onClick={() => setShowMobileSearch(!showMobileSearch)}
+            >
               <Search className="h-5 w-5" />
             </Button>
             {isAuthenticated ? (
@@ -77,15 +103,19 @@ export function Header() {
           </div>
         </div>
         {/* Mobile Search Bar */}
-        <div className="mt-3 sm:hidden">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search questions..."
-              className="pl-10 bg-background/50 backdrop-blur-sm border-border/50 focus:bg-background/80 transition-all"
-            />
+        {showMobileSearch && (
+          <div className="mt-3 sm:hidden">
+            <form onSubmit={handleSearch} className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Search questions..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-background/50 backdrop-blur-sm border-border/50 focus:bg-background/80 transition-all"
+              />
+            </form>
           </div>
-        </div>
+        )}
       </div>
     </header>
   );

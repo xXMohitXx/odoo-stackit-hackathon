@@ -1,0 +1,616 @@
+{
+  "info": {
+    "_postman_id": "e5e5e5e5-e5e5-e5e5-e5e5-e5e5e5e5e5e5",
+    "name": "StackIt API",
+    "description": "A collection for testing the StackIt API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Register a new user"
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login and get JWT token"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            },
+            "description": "Get current user profile"
+          },
+          "response": []
+        }
+      ],
+      "description": "Authentication endpoints"
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            },
+            "description": "Get user profile by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\",\n  \"email\": \"updated@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "profile"]
+            },
+            "description": "Update user profile"
+          },
+          "response": []
+        }
+      ],
+      "description": "User management endpoints"
+    },
+    {
+      "name": "Questions",
+      "item": [
+        {
+          "name": "Get All Questions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/questions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions"]
+            },
+            "description": "Get all questions"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Questions (Newest)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/questions?newest=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions"],
+              "query": [
+                {
+                  "key": "newest",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Get questions sorted by newest"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Questions (Unanswered)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/questions?unanswered=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions"],
+              "query": [
+                {
+                  "key": "unanswered",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Get unanswered questions"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Question by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/questions/{{questionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions", "{{questionId}}"]
+            },
+            "description": "Get question by ID with answers"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"How to use Express.js with MongoDB?\",\n  \"description\": \"<p>I'm trying to connect my Express.js application to MongoDB. What's the best way to do this?</p>\",\n  \"tags\": [\"Node.js\", \"MongoDB\", \"Express\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/questions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions"]
+            },
+            "description": "Create a new question"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Question",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/questions/{{questionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions", "{{questionId}}"]
+            },
+            "description": "Delete a question (owner or admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Answer to Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"<p>You can use Mongoose to connect Express.js to MongoDB. Here's an example:</p><pre>const mongoose = require('mongoose');\nmongoose.connect('mongodb://localhost/myapp', { useNewUrlParser: true });</pre>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/questions/{{questionId}}/answers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questions", "{{questionId}}", "answers"]
+            },
+            "description": "Add an answer to a question"
+          },
+          "response": []
+        }
+      ],
+      "description": "Question management endpoints"
+    },
+    {
+      "name": "Answers",
+      "item": [
+        {
+          "name": "Accept Answer",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/answers/{{answerId}}/accept",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "answers", "{{answerId}}", "accept"]
+            },
+            "description": "Accept an answer (question owner only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Answer",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/answers/{{answerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "answers", "{{answerId}}"]
+            },
+            "description": "Delete an answer (owner or admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Vote on Answer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"voteType\": \"up\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/answers/{{answerId}}/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "answers", "{{answerId}}", "vote"]
+            },
+            "description": "Vote on an answer (up or down)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Answer Votes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/answers/{{answerId}}/votes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "answers", "{{answerId}}", "votes"]
+            },
+            "description": "Get vote counts for an answer"
+          },
+          "response": []
+        }
+      ],
+      "description": "Answer management endpoints"
+    },
+    {
+      "name": "Tags",
+      "item": [
+        {
+          "name": "Get All Tags",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tags",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tags"]
+            },
+            "description": "Get all tags"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Questions by Tag",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tags/{{tagSlug}}/questions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tags", "{{tagSlug}}", "questions"]
+            },
+            "description": "Get questions by tag"
+          },
+          "response": []
+        }
+      ],
+      "description": "Tag management endpoints"
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get User Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications"]
+            },
+            "description": "Get user's notifications"
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Notification as Read",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/{{notificationId}}/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "{{notificationId}}", "read"]
+            },
+            "description": "Mark notification as read"
+          },
+          "response": []
+        },
+        {
+          "name": "Mark All Notifications as Read",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/read-all",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "read-all"]
+            },
+            "description": "Mark all notifications as read"
+          },
+          "response": []
+        }
+      ],
+      "description": "Notification management endpoints"
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get All Users (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users"]
+            },
+            "description": "Get all users (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Question (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/questions/{{questionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "questions", "{{questionId}}"]
+            },
+            "description": "Delete a question (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Answer (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/answers/{{answerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "answers", "{{answerId}}"]
+            },
+            "description": "Delete an answer (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Ban User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/ban/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "ban", "{{userId}}"]
+            },
+            "description": "Ban a user (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Unban User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/unban/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "unban", "{{userId}}"]
+            },
+            "description": "Unban a user (admin only)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Admin management endpoints"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "YOUR_JWT_TOKEN",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "YOUR_ADMIN_JWT_TOKEN",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "USER_ID",
+      "type": "string"
+    },
+    {
+      "key": "questionId",
+      "value": "QUESTION_ID",
+      "type": "string"
+    },
+    {
+      "key": "answerId",
+      "value": "ANSWER_ID",
+      "type": "string"
+    },
+    {
+      "key": "tagSlug",
+      "value": "TAG_SLUG",
+      "type": "string"
+    },
+    {
+      "key": "notificationId",
+      "value": "NOTIFICATION_ID",
+      "type": "string"
+    }
+  ]
+}
